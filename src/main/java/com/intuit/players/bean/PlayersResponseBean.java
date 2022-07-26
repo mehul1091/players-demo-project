@@ -1,6 +1,5 @@
 package com.intuit.players.bean;
 
-import com.intuit.players.entity.PlayerEntity;
 import lombok.Builder;
 import lombok.Data;
 
