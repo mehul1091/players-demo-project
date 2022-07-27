@@ -1,0 +1,40 @@
+version: '2'
+networks:
+  players_network:
+    ipam:
+      config:
+        - subnet: 172.19.0.0/24
+services:
+  players-app:
+    image: dockerhub/myrepo/players-application:0.0.1-SNAPSHOT
+    container_name: players
+    networks:
+      players_network:
+        ipv4_address: 172.19.0.2
+    mem_limit: 800MB
+    ports:
+      - "8080:8080"
+      - "8084:8084"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:8084,server=y,suspend=n
+      - MYSQL_HOST=172.19.0.3
+      - MYSQL_PORT=3306
+      - spring.profiles.active=dev
+    links:
+      - mysql-database
+
+  mysql-database:
+    image: mysql:5.7.28
+    container_name: mysql-database
+    networks:
+      players_network:
+        ipv4_address: 172.19.0.3
+    mem_limit: 800MB
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_ROOT_HOST=%
+    volumes:
+      - '/home/mehul/codebase/jobservice2/docker/mysql-container-data-mount:/var/lib/mysql'

@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,14 +45,15 @@ public class CSVLoaderServiceImpl implements DataLoaderService {
 
     private List<PlayerEntity> mapPlayerObjectToEntity(List<PlayerObjectFromCSV> listOfPlayersFromCsv) {
         log.info("transforming csv data to in memory list");
-        return listOfPlayersFromCsv.stream().map(player ->
-                PlayerEntity.builder()
-                        .firstName(player.getFirstName())
-                        .lastName(player.getLastName())
-                        .gender(player.getGender())
-                        .position(player.getPosition())
-                        .team(player.getTeam())
-                        .build()).collect(Collectors.toList());
+        return listOfPlayersFromCsv.stream()
+                .map(player -> PlayerEntity.builder()
+                                    .id(player.getId())
+                                    .firstName(player.getFirstName())
+                                    .lastName(player.getLastName())
+                                    .gender(player.getGender())
+                                    .position(player.getPosition())
+                                    .team(player.getTeam())
+                                    .build()).collect(Collectors.toList());
     }
 
 }

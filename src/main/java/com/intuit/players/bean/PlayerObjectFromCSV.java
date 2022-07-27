@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 public class PlayerObjectFromCSV {
+    @CsvBindByName(column = "id")
+    private Integer id;
     @CsvBindByName(column = "first_name")
     private String firstName;
     @CsvBindByName(column = "last_name")

@@ -1,59 +1,37 @@
 package com.intuit.players.service;
 
+import com.intuit.players.TestConstants;
 import com.intuit.players.bean.PlayerResponse;
 import com.intuit.players.bean.PlayersResponseBean;
-import com.intuit.players.entity.PlayerEntity;
 import com.intuit.players.repository.PlayersRepository;
 import com.intuit.players.service.impl.DatabaseServiceImpl;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class DatabaseServiceTest {
-
     @Mock
     private PlayersRepository playersRepository;
+    @MockBean
     private DatabaseService databaseService;
-
     @BeforeEach
     void setUp() {
         databaseService=new DatabaseServiceImpl(playersRepository);
     }
 
-    @AfterEach
-    void tearDown() {
-    }
-
-    private PlayerEntity getPlayer1Data(){
-        return PlayerEntity.builder()
-                .firstName("test")
-                .lastName("dummy")
-                .gender("male")
-                .position("front")
-                .team("ABC")
-                .id(1).build();
-    }
-
-    private PlayerEntity getPlayer2Data(){
-        return PlayerEntity.builder()
-                .firstName("test2")
-                .lastName("dummy")
-                .gender("female")
-                .position("front")
-                .team("Z")
-                .id(10).build();
-    }
-
     @Test
     void getPlayerByIdWhenPlayerIsPresent() {
-        Mockito.when(playersRepository.findById(1)).thenReturn(Optional.of(getPlayer1Data()));
+        Mockito.when(playersRepository.findById(1)).thenReturn(Optional.of(TestConstants.getPlayer1Data()));
 
         PlayerResponse playerById = databaseService.getPlayerById(1);
         Assertions.assertEquals(1, playerById.getId());
@@ -74,7 +52,8 @@ class DatabaseServiceTest {
 
     @Test
     void getAllPlayersReturnTwoPlayers() {
-        Mockito.when(playersRepository.findAll()).thenReturn(Arrays.asList(getPlayer1Data(), getPlayer2Data()));
+        Mockito.when(playersRepository.findAll()).thenReturn(
+                Arrays.asList(TestConstants.getPlayer1Data(), TestConstants.getPlayer2Data()));
         PlayersResponseBean allPlayers = databaseService.getAllPlayers();
         Assertions.assertEquals(2, allPlayers.getTotalPlayers());
         Assertions.assertEquals("test2", allPlayers.getPlayerEntityList().get(1).getFirstName());
@@ -91,9 +70,5 @@ class DatabaseServiceTest {
         Assertions.assertEquals(0, allPlayers.getTotalPlayers());
         Assertions.assertEquals(0, allPlayers.getPlayerEntityList().size());
 
-    }
-
-    @Test
-    void saveAll() {
     }
 }

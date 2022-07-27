@@ -19,7 +19,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class PlayerEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String firstName;
     private String lastName;

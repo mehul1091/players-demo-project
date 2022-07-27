@@ -17,7 +17,6 @@ import java.io.IOException;
 @AllArgsConstructor
 @Slf4j
 public class PlayersController {
-
     private final DatabaseService databaseService;
     private final DataLoaderService dataLoaderService;
 
