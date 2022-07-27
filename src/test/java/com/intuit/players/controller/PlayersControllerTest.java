@@ -3,16 +3,14 @@ package com.intuit.players.controller;
 import com.intuit.players.TestConstants;
 import com.intuit.players.bean.PlayerResponse;
 import com.intuit.players.bean.PlayersResponseBean;
+import com.intuit.players.exception.PlayerNotFoundException;
 import com.intuit.players.repository.PlayersRepository;
 import com.intuit.players.service.DataLoaderService;
 import com.intuit.players.service.DatabaseService;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
-import org.hibernate.engine.jdbc.ReaderInputStream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,8 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -30,7 +26,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(PlayersController.class)
@@ -43,10 +38,6 @@ class PlayersControllerTest {
     private DataLoaderService dataLoaderService;
     @Autowired
     private MockMvc mockMvc;
-
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     @SneakyThrows
@@ -103,11 +94,13 @@ class PlayersControllerTest {
     @SneakyThrows
     void getPlayerByIdPLayerNotFound() {
         when(databaseService.getPlayerById(404))
-                .thenReturn(PlayerResponse.builder().message("no data found")
-                .build());
+                .thenThrow(new PlayerNotFoundException(404));
 
-        String contentAsString = mockMvc.perform(get("/api/players/404")).andDo(print()).andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        Assertions.assertThat(contentAsString.contains("\"message\":\"no data found\""));
+        mockMvc.perform(get("/api/players/404"))
+                .andExpect(status().isBadRequest())
+                .andExpect(result ->
+                        Assertions.assertThatExceptionOfType(PlayerNotFoundException.class))
+                ;
+
     }
 }

@@ -3,6 +3,7 @@ package com.intuit.players.service.impl;
 import com.intuit.players.bean.PlayerResponse;
 import com.intuit.players.bean.PlayersResponseBean;
 import com.intuit.players.entity.PlayerEntity;
+import com.intuit.players.exception.PlayerNotFoundException;
 import com.intuit.players.repository.PlayersRepository;
 import com.intuit.players.service.DatabaseService;
 import lombok.AllArgsConstructor;
@@ -42,7 +43,7 @@ public class DatabaseServiceImpl implements DatabaseService {
         Optional<PlayerEntity> playerEntityOptional = playersRepository.findById(playerId);
 
         if(playerEntityOptional.isEmpty())
-            return PlayerResponse.builder().message("no data found").build();
+            throw new PlayerNotFoundException(playerId);
 
         PlayerEntity playerEntity = playerEntityOptional.get();
         return PlayerResponse.builder()

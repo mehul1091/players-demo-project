@@ -14,5 +14,4 @@ public class PlayerResponse {
     private String gender;
     private String team;
     private String position;
-    private String message;
 }

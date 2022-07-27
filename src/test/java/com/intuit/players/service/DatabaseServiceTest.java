@@ -3,6 +3,7 @@ package com.intuit.players.service;
 import com.intuit.players.TestConstants;
 import com.intuit.players.bean.PlayerResponse;
 import com.intuit.players.bean.PlayersResponseBean;
+import com.intuit.players.exception.PlayerNotFoundException;
 import com.intuit.players.repository.PlayersRepository;
 import com.intuit.players.service.impl.DatabaseServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -40,14 +41,14 @@ class DatabaseServiceTest {
         Assertions.assertEquals("male", playerById.getGender());
         Assertions.assertEquals("front", playerById.getPosition());
         Assertions.assertEquals("ABC", playerById.getTeam());
-        Assertions.assertEquals(null, playerById.getMessage());
     }
 
     @Test
     void getPlayerByIdWhenPlayerIsNotPresent() {
         Mockito.when(playersRepository.findById(404)).thenReturn(Optional.empty());
-        PlayerResponse playerById = databaseService.getPlayerById(404);
-        Assertions.assertEquals("no data found", playerById.getMessage());
+        Exception exception = Assertions.assertThrows(PlayerNotFoundException.class, () ->
+                databaseService.getPlayerById(404));
+        Assertions.assertEquals("player with id 404 not found", exception.getMessage());
     }
 
     @Test
